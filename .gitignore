@@ -1,0 +1,13 @@
+# Ignore node modules
+/node_modules
+
+# Ignore Electron build artifacts (if you package later)
+/dist
+/out
+
+# Ignore logs
+npm-debug.log*
+*.log
+
+# Optional: ignore .env if you store database credentials
+.env
