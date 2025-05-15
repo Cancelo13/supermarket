@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SuperMarket Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container-fluid vh-100 d-flex flex-column">
+        <div class="row flex-grow-1">
+            <div class="col-md-6 d-flex flex-column justify-content-center align-items-center p-5">
+                <div class="logo-container mb-4 text-center">
+                    <i class="fas fa-shopping-cart fa-4x text-primary"></i>
+                    <h1 class="mt-3 mb-4">SuperMarket Management System</h1>
+                </div>
+
+                <div class="btn-group w-100 mb-4" role="group">
+                    <button type="button" class="btn btn-primary" id="loginTabBtn">Login</button>
+                    <button type="button" class="btn btn-outline-primary" id="registerTabBtn">Register</button>
+                </div>
+
+                <div id="loginForm" class="w-100">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-4">Login to Your Account</h2>
+                            <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
+                            <form id="loginFormElement">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="loginEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-sign-in-alt me-2"></i> Login
+                                    </button>
+                                    <button type="button" class="btn btn-link" id="showRegisterFormBtn">
+                                        Don't have an account? Register now
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="registerForm" class="w-100 d-none">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-4">Create an Account</h2>
+                            <div id="registerAlert" class="alert alert-danger d-none" role="alert"></div>
+                            <form id="registerFormElement">
+                                <div class="mb-3">
+                                    <label for="registerName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="registerName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="registerEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerAddress" class="form-label">Address (Optional)</label>
+                                    <input type="text" class="form-control" id="registerAddress">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPhone" class="form-label">Phone Number (Optional)</label>
+                                    <input type="tel" class="form-control" id="registerPhone">
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-user-plus me-2"></i> Register
+                                    </button>
+                                    <button type="button" class="btn btn-link" id="showLoginFormBtn">
+                                        Already have an account? Login now
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button id="goBackBtn" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Home
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6 bg-primary d-none d-md-flex align-items-center justify-content-center">
+                <div class="text-white p-5 text-center">
+                    <h2 class="display-5 fw-bold mb-4">Welcome to Our Supermarket</h2>
+
+                    <div class="mb-5">
+                        <p class="lead">Sign in to access your account or register to join our community of shoppers.
+                        </p>
+                    </div>
+
+                    <div class="features-list text-start">
+                        <div class="feature-item d-flex align-items-center mb-4">
+                            <div class="feature-icon me-3">
+                                <i class="fas fa-shopping-basket fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5 mb-1">Browse Our Catalog</h3>
+                                <p class="mb-0">Explore a wide range of products organized by categories</p>
+                            </div>
+                        </div>
+                        <div class="feature-item d-flex align-items-center mb-4">
+                            <div class="feature-icon me-3">
+                                <i class="fas fa-cart-plus fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5 mb-1">Shopping Cart</h3>
+                                <p class="mb-0">Add products to your cart and checkout seamlessly</p>
+                            </div>
+                        </div>
+                        <div class="feature-item d-flex align-items-center mb-4">
+                            <div class="feature-icon me-3">
+                                <i class="fas fa-history fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5 mb-1">Order History</h3>
+                                <p class="mb-0">Keep track of your previous purchases and their status</p>
+                            </div>
+                        </div>
+                        <div class="feature-item d-flex align-items-center">
+                            <div class="feature-icon me-3">
+                                <i class="fas fa-tag fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5 mb-1">Special Offers</h3>
+                                <p class="mb-0">Receive vouchers and discounts as a loyal customer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>
