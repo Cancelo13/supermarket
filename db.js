@@ -1,11 +1,15 @@
 const sql = require("mssql");
+const serverName = process.env.SERVER_NAME || 'localhost';
+const userInstanceName = process.env.INSTANCE_NAME || 'SQLEXPRESS';
+const userName = process.env.USER_NAME || 'sa';
+const userPassword = process.env.USER_PASSWORD || 'admin123';
 const config = {
-    server: 'MOHAMED',
+    server: serverName,
     database: 'master',
-    user: 'sa',
-    password: 'admin123',
+    user: userName,
+    password: userPassword,
     options: {
-        instanceName: 'SQLEXPRESS',
+        instanceName: userInstanceName,
         trustServerCertificate: true,
         enableArithAbort: true
     },
