@@ -1,5 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const fs = require('fs');
+const { getAppPool, getPool } = require('./db.js');
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -16,7 +18,10 @@ function createWindow() {
     win.loadFile('./renderer/index.html');
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+    await setupDatabase();
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
@@ -29,3 +34,31 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+async function setupDatabase() {
+    try {
+        const pool = await getPool();
+
+        const result = await pool.request()
+            .query("SELECT database_id FROM sys.databases WHERE name = 'SupermarketDB'");
+
+        if (result.recordset.length === 0) {
+            console.log("Creating SupermarketDB database...");
+            await pool.request().query("CREATE DATABASE SupermarketDB");
+            console.log("SupermarketDB created successfully");
+        } else {
+            console.log("SupermarketDB already exists");
+        }
+
+        const appPool = await getAppPool();
+
+        const schemaPath = path.join(__dirname, 'sql', 'schema.sql');
+        const schema = fs.readFileSync(schemaPath, 'utf-8');
+
+        await appPool.request().batch(schema);
+
+        console.log("Schema applied successfully to SupermarketDB");
+    } catch (err) {
+        console.error("Database setup error:", err);
+    }
+}
