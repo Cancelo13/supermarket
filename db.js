@@ -54,4 +54,38 @@ function getAppPool() {
     return appPoolPromise;
 }
 
-module.exports = { sql, getPool, getAppPool };
+async function executeQuery(query, params = []) {
+    try {
+        const pool = await getAppPool();
+        const request = pool.request();
+
+        if (params && params.length) {
+            params.forEach(param => {
+                request.input(param.name, param.value);
+            });
+        }
+
+        const result = await request.query(query);
+        return { status: 200, data: result };
+    } catch (err) {
+        console.error("Query execution error: ", err);
+        return {
+            status: 500, message: "Query execution failed", error: err.message
+        }
+    }
+}
+
+async function closePool() {
+    try {
+        if (appPoolPromise) {
+            await appPoolPromise.close();
+            appPoolPromise = null;
+            console.log("SupermarketDB connection closed");
+        }
+    }
+    catch (err) {
+        console.error("Error closing SupermarketDB connection: ", err);
+    }
+}
+
+module.exports = { sql, getPool, getAppPool, executeQuery };
