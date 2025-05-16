@@ -56,3 +56,29 @@ CREATE TABLE [dbo].[OrderItem] (
 
 CREATE INDEX IX_OrderItem_OrderID ON OrderItem(OrderID)
 CREATE INDEX IX_OrderItem_ProductID ON OrderItem(ProductID)
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Voucher]') AND type in (N'U'))
+DROP TABLE [dbo].[Voucher]
+
+CREATE TABLE [dbo].[Voucher] (
+    VoucherID            INT                  NOT NULL,
+    CustomerID           INT                  NULL,
+    Code                 VARCHAR(10)          NOT NULL,
+    Discount_Amount      DECIMAL(10,2)        NOT NULL,
+    Expiry_Date         DATETIME             NOT NULL,
+    Created_Date        DATETIME             NOT NULL DEFAULT GETDATE(),
+    Used                BIT                  NOT NULL DEFAULT 0,
+    Used_Date           DATETIME             NULL,
+    Min_Purchase_Amount  DECIMAL(10,2)        NOT NULL DEFAULT 0,
+    OrderID             INT                  NULL,
+    CONSTRAINT PK_VOUCHER PRIMARY KEY (VoucherID),
+    CONSTRAINT FK_VOUCHER_CUSTOMER FOREIGN KEY (CustomerID) 
+        REFERENCES Customer (CustomerID),
+    CONSTRAINT FK_VOUCHER_ORDER FOREIGN KEY (OrderID) 
+        REFERENCES [Order] (OrderID)
+)
+
+-- Create indexes for Voucher table
+CREATE UNIQUE INDEX IX_Voucher_Code ON Voucher (Code)
+CREATE INDEX IX_Voucher_CustomerID ON Voucher (CustomerID)
+CREATE INDEX IX_Voucher_OrderID ON Voucher (OrderID)
