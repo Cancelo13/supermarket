@@ -1,0 +1,43 @@
+-- Drop foreign key constraints first
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_ORDERITEM_ORDER')
+    ALTER TABLE OrderItem DROP CONSTRAINT FK_ORDERITEM_ORDER;
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_ORDERITEM_PRODUCT')
+    ALTER TABLE OrderItem DROP CONSTRAINT FK_ORDERITEM_PRODUCT;
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_ORDER_CUSTOMER')
+    ALTER TABLE [Order] DROP CONSTRAINT FK_ORDER_CUSTOMER;
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_PRODUCT_CATEGORY')
+    ALTER TABLE Product DROP CONSTRAINT FK_PRODUCT_CATEGORY;
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_PRODUCT_INVENTORY')
+    ALTER TABLE Product DROP CONSTRAINT FK_PRODUCT_INVENTORY;
+
+IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_VOUCHER_CUSTOMER')
+    ALTER TABLE Voucher DROP CONSTRAINT FK_VOUCHER_CUSTOMER;
+
+-- Now drop the tables in correct order
+IF OBJECT_ID('OrderItem', 'U') IS NOT NULL
+    DROP TABLE OrderItem;
+
+IF OBJECT_ID('Order', 'U') IS NOT NULL
+    DROP TABLE [Order];
+
+IF OBJECT_ID('Voucher', 'U') IS NOT NULL
+    DROP TABLE Voucher;
+
+IF OBJECT_ID('Product', 'U') IS NOT NULL
+    DROP TABLE Product;
+
+IF OBJECT_ID('Category', 'U') IS NOT NULL
+    DROP TABLE Category;
+
+IF OBJECT_ID('Inventory', 'U') IS NOT NULL
+    DROP TABLE Inventory;
+
+IF OBJECT_ID('Customer', 'U') IS NOT NULL
+    DROP TABLE Customer;
+
+IF OBJECT_ID('Admin', 'U') IS NOT NULL
+    DROP TABLE Admin;

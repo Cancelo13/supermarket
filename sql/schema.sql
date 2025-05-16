@@ -249,12 +249,12 @@ AdminID ASC
 create table "Order" (
    OrderID              int                  not null,
    CustomerID           int                  not null,
-   OrderDate            varchar(100)         not null,
-   Status               varchar(100)         not null,
-   Amount               int                  not null,
+   OrderDate            datetime            not null,
+   Shipping_Address     varchar(255)         not null,
+   Amount              decimal(10,2)        not null,
+   Status              int                  not null, 
    constraint PK_ORDER primary key nonclustered (OrderID)
 )
-
 
 
 /*==============================================================*/
