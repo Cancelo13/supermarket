@@ -1,0 +1,296 @@
+/* Customer Portal Specific Styles */
+
+/* Sidebar Styles */
+.sidebar {
+    height: 100vh;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+    }
+}
+
+.sidebar .nav-link {
+    color: #2C3E50;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498DB;
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498DB;
+    border-left-color: #3498DB;
+}
+
+.sidebar .nav-link.text-danger:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #E74C3C;
+    border-left-color: #E74C3C;
+}
+
+/* Main Content Area */
+main {
+    padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    main {
+        margin-left: 25%;
+    }
+}
+
+@media (min-width: 992px) {
+    main {
+        margin-left: 16.66666667%;
+    }
+}
+
+/* Product Cards */
+.product-card {
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-card .card-img-top {
+    height: 180px;
+    object-fit: contain;
+    padding: 1.25rem;
+    background-color: #f8f9fa;
+}
+
+.product-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card .card-title {
+    font-weight: 600;
+    min-height: 48px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-card .product-price {
+    font-weight: 700;
+    color: #2C3E50;
+    font-size: 1.1rem;
+    margin-top: auto;
+}
+
+.product-card .product-category {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.product-card .low-stock-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(231, 76, 60, 0.9);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Cart Item Styles */
+.cart-item {
+    transition: background-color 0.3s ease;
+}
+
+.cart-item:hover {
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+/* Order Status Pills */
+.order-status {
+    font-size: 0.85rem;
+    padding: 0.35em 0.85em;
+    border-radius: 50rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.order-status-pending {
+    background-color: #FEF9C3;
+    color: #92400E;
+}
+
+.order-status-processing {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.order-status-shipped {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.order-status-delivered {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.order-status-cancelled {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Voucher Card Styles */
+.voucher-card {
+    border: 2px dashed #3498DB;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.voucher-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(45deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.05) 10px, rgba(52, 152, 219, 0.1) 10px, rgba(52, 152, 219, 0.1) 20px);
+}
+
+.voucher-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.voucher-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2C3E50;
+}
+
+.voucher-expiry {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.voucher-code {
+    background-color: rgba(52, 152, 219, 0.1);
+    border: 1px dashed #3498DB;
+    border-radius: 4px;
+    padding: 0.35rem 0.75rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Featured Products Section */
+.featured-product {
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.featured-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.featured-product-icon {
+    font-size: 2.5rem;
+    color: #3498DB;
+    margin-bottom: 1rem;
+}
+
+/* Dashboard Quick Links */
+.quick-link-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Section Styles */
+.profile-section {
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Checkout Form Styles */
+.checkout-section {
+    margin-bottom: 2rem;
+}
+
+.checkout-summary {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.checkout-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.checkout-item:last-child {
+    border-bottom: none;
+}
+
+.checkout-total {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2C3E50;
+}
+
+/* Custom Radio Button for Payment Method */
+.payment-method-radio {
+    margin-right: 0.5rem;
+}
+
+.payment-method-label {
+    font-weight: 500;
+    cursor: pointer;
+}
