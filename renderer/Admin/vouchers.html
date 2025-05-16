@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vouchers Management - SuperMarket</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row vh-100">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-store fa-3x text-light"></i>
+                        <h5 class="mt-2 text-light">SuperMarket Admin</h5>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.html">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="products.html">
+                                <i class="fas fa-box me-2"></i>
+                                Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="inventory.html">
+                                <i class="fas fa-warehouse me-2"></i>
+                                Inventory
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="customers.html">
+                                <i class="fas fa-users me-2"></i>
+                                Customers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="orders.html">
+                                <i class="fas fa-clipboard-list me-2"></i>
+                                Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="vouchers.html">
+                                <i class="fas fa-ticket-alt me-2"></i>
+                                Vouchers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="reports.html">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Reports
+                            </a>
+                        </li>
+                        <li class="nav-item mt-5">
+                            <a class="nav-link text-danger" href="#" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Vouchers Management</h1>
+                    <div class="btn-toolbar">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#addVoucherModal">
+                            <i class="fas fa-plus me-2"></i> Create Voucher
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alert messages -->
+                <div id="alertContainer"></div>
+
+                <!-- Vouchers Filter and Search -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Filter Vouchers</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="searchInput"
+                                        placeholder="Search by code or customer...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-sort"></i></span>
+                                    <select class="form-select" id="sortOptions">
+                                        <option value="expiry_asc">Expiry Date (Soonest First)</option>
+                                        <option value="expiry_desc">Expiry Date (Latest First)</option>
+                                        <option value="value_asc">Value (Low to High)</option>
+                                        <option value="value_desc">Value (High to Low)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-filter"></i></span>
+                                    <select class="form-select" id="statusFilter">
+                                        <option value="all">All Vouchers</option>
+                                        <option value="active">Active Vouchers</option>
+                                        <option value="expired">Expired Vouchers</option>
+                                        <option value="assigned">Assigned to Customer</option>
+                                        <option value="unassigned">Not Assigned</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="resetFiltersBtn" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-redo me-2"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vouchers Table -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Value</th>
+                                        <th>Expiry Date</th>
+                                        <th>Assigned To</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vouchersTableBody">
+                                    <!-- Vouchers will be loaded here by JavaScript -->
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading vouchers...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="noVouchersMessage" class="text-center py-4 d-none">
+                                <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+                                <h5>No vouchers found</h5>
+                                <p>Try adjusting your filters or create a new voucher</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Voucher Modal -->
+    <div class="modal fade" id="addVoucherModal" tabindex="-1" aria-labelledby="addVoucherModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVoucherModalLabel">Create New Voucher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="addVoucherAlert" class="alert alert-danger d-none"></div>
+                    <form id="addVoucherForm">
+                        <div class="mb-3">
+                            <label for="voucherValue" class="form-label">Voucher Value</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="voucherValue" min="1" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="voucherExpiry" class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" id="voucherExpiry" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="voucherCustomer" class="form-label">Assign to Customer (Optional)</label>
+                            <select class="form-select" id="voucherCustomer">
+                                <option value="">Not assigned to any customer</option>
+                                <!-- Customers will be loaded here by JavaScript -->
+                            </select>
+                            <div class="form-text">Leave unassigned to create a general voucher that can be assigned
+                                later.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveVoucherBtn">Create Voucher</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Voucher Modal -->
+    <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-labelledby="editVoucherModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editVoucherModalLabel">Edit Voucher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editVoucherAlert" class="alert alert-danger d-none"></div>
+                    <form id="editVoucherForm">
+                        <input type="hidden" id="editVoucherId">
+                        <div class="mb-3">
+                            <label class="form-label">Voucher Code</label>
+                            <input type="text" class="form-control" id="editVoucherCode" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editVoucherValue" class="form-label">Voucher Value</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="editVoucherValue" min="1" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editVoucherExpiry" class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" id="editVoucherExpiry" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editVoucherCustomer" class="form-label">Assign to Customer</label>
+                            <select class="form-select" id="editVoucherCustomer">
+                                <option value="">Not assigned to any customer</option>
+                                <!-- Customers will be loaded here by JavaScript -->
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateVoucherBtn">Update Voucher</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteVoucherModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this voucher? This action cannot be undone.</p>
+                    <div id="deleteVoucherAlert" class="alert alert-danger d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteVoucherBtn">Delete Voucher</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/admin/vouchers.js"></script>
+</body>
+
+</html>
