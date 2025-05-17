@@ -74,6 +74,12 @@ contextBridge.exposeInMainWorld('api', {
                 return await ipcRenderer.invoke('customer:getFeaturedProducts');
             case '/customer/dashboard/recentOrders':
                 return await ipcRenderer.invoke('customer:getRecentOrders', data.customerId);
+            case '/customer/profile/update':
+                return await ipcRenderer.invoke('customer:updateProfile', data);
+            case '/customer/profile/changePassword':
+                return await ipcRenderer.invoke('customer:changePassword', data);
+            case '/customer/profile/delete':
+                return await ipcRenderer.invoke('customer:deleteAccount', data);
             default:
                 return { status: 404, message: 'Endpoint not found' };
         }

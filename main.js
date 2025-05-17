@@ -1550,3 +1550,161 @@ ipcMain.handle('customer:getRecentOrders', async (event, customerId) => {
         };
     }
 });
+
+ipcMain.handle('customer:updateProfile', async (event, profileData) => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .input('id', sql.Int, profileData.id)
+            .input('name', sql.VarChar(100), profileData.name)
+            .input('email', sql.VarChar(100), profileData.email)
+            .input('address', sql.VarChar(255), profileData.address)
+            .query(`
+                UPDATE Customer 
+                SET Name = @name,
+                    Email = @email,
+                    Address = @address
+                WHERE CustomerID = @id;
+
+                SELECT 
+                    CustomerID as id,
+                    Name as name,
+                    Email as username,
+                    'customer' as role,
+                    Address as address
+                FROM Customer 
+                WHERE CustomerID = @id
+            `);
+
+        if (result.recordset.length === 0) {
+            return {
+                success: false,
+                message: 'Failed to update profile'
+            };
+        }
+
+        global.currentUser = result.recordset[0];
+
+        return {
+            success: true,
+            user: result.recordset[0],
+            message: 'Profile updated successfully'
+        };
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return {
+            success: false,
+            message: error.message || 'Failed to update profile'
+        };
+    }
+});
+
+ipcMain.handle('customer:changePassword', async (event, { currentPassword, newPassword }) => {
+    try {
+        const pool = await getAppPool();
+        const userId = global.currentUser?.id;
+
+        if (!userId) {
+            return {
+                success: false,
+                message: 'Not logged in'
+            };
+        }
+
+        const verifyResult = await pool.request()
+            .input('id', sql.Int, userId)
+            .input('currentPass', sql.VarChar(100), currentPassword)
+            .query(`
+                SELECT CustomerID 
+                FROM Customer 
+                WHERE CustomerID = @id AND Password = @currentPass
+            `);
+
+        if (verifyResult.recordset.length === 0) {
+            return {
+                success: false,
+                message: 'Current password is incorrect'
+            };
+        }
+
+        await pool.request()
+            .input('id', sql.Int, userId)
+            .input('newPass', sql.VarChar(100), newPassword)
+            .query(`
+                UPDATE Customer 
+                SET Password = @newPass 
+                WHERE CustomerID = @id
+            `);
+
+        return {
+            success: true,
+            message: 'Password updated successfully'
+        };
+    } catch (error) {
+        console.error('Error changing password:', error);
+        return {
+            success: false,
+            message: error.message || 'Failed to change password'
+        };
+    }
+});
+
+ipcMain.handle('customer:deleteAccount', async (event, { customerId }) => {
+    try {
+        const pool = await getAppPool();
+        const transaction = await pool.transaction();
+        await transaction.begin();
+
+        try {
+            const orderCheck = await transaction.request()
+                .input('id', sql.Int, customerId)
+                .query(`
+                    SELECT OrderID 
+                    FROM "Order" 
+                    WHERE CustomerID = @id 
+                    AND Status NOT IN (4, 5) 
+                `);
+
+            if (orderCheck.recordset.length > 0) {
+                await transaction.rollback();
+                return {
+                    success: false,
+                    message: 'Cannot delete account with active orders'
+                };
+            }
+
+            await transaction.request()
+                .input('id', sql.Int, customerId)
+                .query(`
+                    UPDATE "Order"
+                    SET CustomerID = NULL
+                    WHERE CustomerID = @id 
+                    AND Status IN (4, 5); 
+
+                    UPDATE Voucher
+                    SET CustomerID = NULL
+                    WHERE CustomerID = @id;
+
+                    DELETE FROM Customer 
+                    WHERE CustomerID = @id;
+                `);
+
+            await transaction.commit();
+            global.currentUser = null;
+
+            return {
+                success: true,
+                message: 'Account deleted successfully'
+            };
+        } catch (err) {
+            await transaction.rollback();
+            throw err;
+        }
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        return {
+            success: false,
+            message: error.message || 'Failed to delete account'
+        };
+    }
+});
