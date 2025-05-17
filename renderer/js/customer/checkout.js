@@ -31,6 +31,11 @@ function setupEventListeners() {
 
     document.getElementById('shippingForm').addEventListener('submit', (e) => e.preventDefault());
     document.getElementById('paymentForm').addEventListener('submit', (e) => e.preventDefault());
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        window.api.logout();
+        window.api.redirectTo('../index.html');
+    });
 }
 
 function loadCheckoutItems() {

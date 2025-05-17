@@ -14,7 +14,7 @@ function setupEventListeners() {
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
         window.api.logout();
-        window.api.redirectTo('login.html');
+        window.api.redirectTo('../index.html');
     });
 }
 

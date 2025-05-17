@@ -377,3 +377,8 @@ async function deleteProduct(productId) {
         }
     };
 }
+
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+    await window.api.logout();
+    window.api.redirectTo('../index.html');
+});

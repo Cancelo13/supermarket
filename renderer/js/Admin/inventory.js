@@ -316,3 +316,8 @@ async function loadInventory() {
         showAlert('danger', 'Error loading inventory');
     }
 }
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    window.api.logout();
+    window.api.redirectTo('../index.html');
+});
