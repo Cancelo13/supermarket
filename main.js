@@ -1708,3 +1708,269 @@ ipcMain.handle('customer:deleteAccount', async (event, { customerId }) => {
         };
     }
 });
+
+ipcMain.handle('reports:needsRestock', async () => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .query(`
+                SELECT 
+                    p.ProductID,
+                    p.Prod_Name,
+                    c.Category_Name,
+                    p.Quantity,
+                    i.Location
+                FROM Product p
+                JOIN Category c ON p.CategoryID = c.CategoryID
+                JOIN Inventory i ON p.InventoryID = i.InventoryID
+                WHERE p.Quantity <= 20
+                ORDER BY p.Quantity ASC
+            `);
+
+        return {
+            success: true,
+            products: result.recordset
+        };
+    } catch (error) {
+        console.error('Error fetching restock report:', error);
+        return { success: false, message: 'Failed to fetch restock report' };
+    }
+});
+
+ipcMain.handle('reports:neverBought', async () => {
+    try {
+        console.log('API: reports:neverBought called');
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .query(`
+                SELECT 
+                    p.ProductID,
+                    p.Prod_Name,
+                    p.Prod_Price,
+                    c.Category_Name,
+                    p.Quantity
+                FROM 
+                    Product p
+                JOIN 
+                    Category c ON p.CategoryID = c.CategoryID
+                WHERE 
+                    p.ProductID NOT IN (
+                        SELECT DISTINCT ProductID 
+                        FROM OrderItem
+                    )
+                ORDER BY 
+                    p.Prod_Name
+            `);
+        console.log('API: reports:neverBought result:', result.recordset);
+        return {
+            success: true,
+            products: result.recordset
+        };
+    } catch (error) {
+        console.error('Error fetching never bought report:', error);
+        return { success: false, message: 'Failed to fetch never bought report' };
+    }
+});
+
+ipcMain.handle('reports:mostBought', async () => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .query(`
+                SELECT 
+                    p.ProductID,
+                    p.Prod_Name,
+                    p.Prod_Price,
+                    SUM(oi.Quantity) as TotalPurchases,
+                    COUNT(DISTINCT o.CustomerID) as UniqueCustomers,
+                    SUM(oi.Quantity * oi.Unit_Price) as TotalRevenue
+                FROM Product p
+                JOIN OrderItem oi ON p.ProductID = oi.ProductID
+                JOIN "Order" o ON oi.OrderID = o.OrderID
+                WHERE o.Status != 5
+                GROUP BY p.ProductID, p.Prod_Name, p.Prod_Price
+                ORDER BY TotalPurchases DESC
+            `);
+
+        return {
+            success: true,
+            products: result.recordset
+        };
+    } catch (error) {
+        console.error('Error fetching most bought report:', error);
+        return { success: false, message: 'Failed to fetch most bought report' };
+    }
+});
+
+ipcMain.handle('reports:productCustomers', async (event, productId) => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .input('productId', sql.Int, productId)
+            .query(`
+                SELECT 
+                    c.CustomerID,
+                    c.Name,
+                    c.Email,
+                    MAX(o.Order_Date) as LastPurchase,
+                    COUNT(DISTINCT o.OrderID) as OrderCount,
+                    SUM(oi.Quantity) as TotalQuantity
+                FROM Customer c
+                JOIN "Order" o ON c.CustomerID = o.CustomerID
+                JOIN OrderItem oi ON o.OrderID = oi.OrderID
+                WHERE oi.ProductID = @productId
+                AND o.Status != 5
+                GROUP BY c.CustomerID, c.Name, c.Email
+                ORDER BY LastPurchase DESC
+            `);
+
+        return {
+            success: true,
+            customers: result.recordset
+        };
+    } catch (error) {
+        console.error('Error fetching product customers:', error);
+        return { success: false, message: 'Failed to fetch product customers' };
+    }
+});
+
+ipcMain.handle('reports:inactiveCustomers', async () => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .query(`
+                SELECT 
+                    c.CustomerID,
+                    c.Name,
+                    c.Email,
+                    MAX(o.Order_Date) as LastOrderDate
+                FROM Customer c
+                LEFT JOIN "Order" o ON c.CustomerID = o.CustomerID
+                WHERE o.Order_Date IS NULL 
+                OR o.Order_Date < DATEADD(MONTH, -3, GETDATE())
+                GROUP BY c.CustomerID, c.Name, c.Email
+                ORDER BY LastOrderDate DESC
+            `);
+
+        return {
+            success: true,
+            customers: result.recordset
+        };
+    } catch (error) {
+        console.error('Error fetching inactive customers:', error);
+        return { success: false, message: 'Failed to fetch inactive customers' };
+    }
+});
+
+ipcMain.handle('reports:topSpenders', async () => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .query(`
+                SELECT 
+                    c.CustomerID,
+                    c.Name,
+                    c.Email,
+                    COUNT(o.OrderID) as OrderCount,
+                    SUM(o.Amount) as TotalSpent
+                FROM Customer c
+                JOIN "Order" o ON c.CustomerID = o.CustomerID
+                WHERE o.Status != 5
+                GROUP BY c.CustomerID, c.Name, c.Email
+                ORDER BY TotalSpent DESC
+            `);
+
+        return {
+            success: true,
+            customers: result.recordset
+        };
+    } catch (error) {
+        console.error('Error fetching top spenders:', error);
+        return { success: false, message: 'Failed to fetch top spenders' };
+    }
+});
+
+ipcMain.handle('reports:categoryComparison', async (event, { category1, category2 }) => {
+    try {
+        const pool = await getAppPool();
+        const result = await pool.request()
+            .input('category1', sql.Int, category1)
+            .input('category2', sql.Int, category2)
+            .query(`
+                WITH CategoryStats AS (
+                    SELECT 
+                        c.CategoryID,
+                        c.Category_Name,
+                        COUNT(DISTINCT p.ProductID) as ProductCount,
+                        ISNULL(SUM(oi.Quantity), 0) as TotalSales,
+                        ISNULL(SUM(oi.Quantity * oi.Unit_Price), 0) as TotalRevenue,
+                        CAST(ISNULL(SUM(oi.Quantity), 0) AS FLOAT) / NULLIF(COUNT(DISTINCT p.ProductID), 0) as AvgSalesPerProduct
+                    FROM Category c
+                    LEFT JOIN Product p ON c.CategoryID = p.CategoryID
+                    LEFT JOIN OrderItem oi ON p.ProductID = oi.ProductID
+                    LEFT JOIN "Order" o ON oi.OrderID = o.OrderID
+                    WHERE c.CategoryID IN (@category1, @category2)
+                    AND (o.Status != 5 OR o.Status IS NULL)
+                    GROUP BY c.CategoryID, c.Category_Name
+                ),
+                ProductDetails AS (
+                    SELECT 
+                        c.CategoryID,
+                        c.Category_Name,
+                        p.ProductID,
+                        p.Prod_Name,
+                        ISNULL(SUM(oi.Quantity), 0) as TotalSales,
+                        ISNULL(SUM(oi.Quantity * oi.Unit_Price), 0) as TotalRevenue,
+                        0 as AvgSalesPerProduct
+                    FROM Category c
+                    JOIN Product p ON c.CategoryID = p.CategoryID
+                    LEFT JOIN OrderItem oi ON p.ProductID = oi.ProductID
+                    LEFT JOIN "Order" o ON oi.OrderID = o.OrderID
+                    WHERE c.CategoryID IN (@category1, @category2)
+                    AND (o.Status != 5 OR o.Status IS NULL)
+                    GROUP BY c.CategoryID, c.Category_Name, p.ProductID, p.Prod_Name
+                )
+            
+                SELECT 
+                    'SUMMARY' as Type,
+                    CategoryID,
+                    Category_Name,
+                    NULL as ProductID,
+                    NULL as Prod_Name,
+                    ProductCount,
+                    TotalSales,
+                    TotalRevenue,
+                    AvgSalesPerProduct
+                FROM CategoryStats
+            
+                UNION ALL
+            
+                SELECT 
+                    'DETAILS' as Type,
+                    CategoryID,
+                    Category_Name,
+                    ProductID,
+                    Prod_Name,
+                    NULL as ProductCount,
+                    TotalSales,
+                    TotalRevenue,
+                    AvgSalesPerProduct
+                FROM ProductDetails
+                ORDER BY Type DESC, TotalSales DESC
+            `)
+
+        const summary = result.recordset.filter(r => r.Type === 'SUMMARY');
+        const details = result.recordset.filter(r => r.Type === 'DETAILS');
+
+        return {
+            success: true,
+            comparison: {
+                summary,
+                details
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching category comparison:', error);
+        return { success: false, message: 'Failed to fetch category comparison' };
+    }
+});

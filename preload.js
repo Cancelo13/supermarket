@@ -80,6 +80,23 @@ contextBridge.exposeInMainWorld('api', {
                 return await ipcRenderer.invoke('customer:changePassword', data);
             case '/customer/profile/delete':
                 return await ipcRenderer.invoke('customer:deleteAccount', data);
+            case '/reports/needsRestock':
+                return await ipcRenderer.invoke('reports:needsRestock');
+            case '/reports/neverBought':
+                return await ipcRenderer.invoke('reports:neverBought');
+            case '/reports/mostBought':
+                return await ipcRenderer.invoke('reports:mostBought');
+            case '/reports/productCustomers':
+                return await ipcRenderer.invoke('reports:productCustomers', data.productId);
+            case '/reports/inactiveCustomers':
+                return await ipcRenderer.invoke('reports:inactiveCustomers');
+            case '/reports/topSpenders':
+                return await ipcRenderer.invoke('reports:topSpenders');
+            case '/reports/categoryComparison':
+                return await ipcRenderer.invoke('reports:categoryComparison', {
+                    category1: data.category1,
+                    category2: data.category2
+                });
             default:
                 return { status: 404, message: 'Endpoint not found' };
         }
